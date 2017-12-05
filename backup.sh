@@ -24,7 +24,7 @@
 ################
 
 # Server Name
-server_name="hostname"
+server_name="localhost"
 
 # Backup path
 backup_path="/tmp"
@@ -33,11 +33,11 @@ backup_path="/tmp"
 log_file="/var/log/backup.log"
 
 # Files to backup (Multi value)
-backup_files_enable="no"
+backup_files_enable="yes"
 backup_files="/root/.bash_history /etc/passwd"
 
 # Directories to backup (Multi value)
-backup_dir_enable="no"
+backup_dir_enable="yes"
 backup_directories="/etc /var/log /usr/local"
 
 # Copy to other media (Multi value)
@@ -63,20 +63,27 @@ ftp_password=""
 
 # Send an email the result of the backup process
 # You should have sendmail or postfix installed
-send_email="no"
-email_to="test@gmail.com"
+send_email="yes"
+email_to="angebagui@gmail.com"
 
 # Upload to MEGA.nz if you have installed the client.
 # /Root/ is the main directory in MEGA.nz
-mega_enable="no"
-mega_email=""
-mega_pass=""
+mega_enable="yes"
+mega_email="angebagui@gmail.com"
+mega_pass="88224466AB"
 mega_path="/Root/backups" # /Root/ should always be here.
 
+# Full MongoDB dump (All Databases)
+mongodb_backup="yes"
+mongodb_user=""
+mongodb_pass=""
+mongodb_host="localhost"
+mongodb_port="27017"
+
 # Full MySQL dump (All Databases)
-mysql_backup="no"
-mysql_user=""
-mysql_pass=""
+mysql_backup="yes"
+mysql_user="root"
+mysql_pass="root"
 
 # Full PostgreSQL dump (All Databases)
 postgres_backup="no"
@@ -170,13 +177,29 @@ fi
 
 sleep 1
 
+# MongoDB backup
+if [ $mongodb_backup = "yes" ]
+then
+	echo -e "\n ${color}--- $date_now MySQL backup enabled, backing up: \n${nc}"
+	echo "$date_now MongoDB backup enabled, backing up" >> $log_file
+	# Using ionice for MongoDB dump
+	ionice -c 3 mongodump -h $hostname -o | gzip -9 > $backup_path/Backup/$path_date/MongoDB_Full_Dump_$path_date.gz | tee -a $log_file
+	if [ $? -eq 0 ]
+	then
+		echo -e "\n ${color}--- $date_now MongoDB backup completed. \n${nc}"
+		echo "$date_now Backing up files" >> $log_file
+	fi
+fi
+
+sleep 1
+
 # MySQL backup
 if [ $mysql_backup = "yes" ]
 then
 	echo -e "\n ${color}--- $date_now MySQL backup enabled, backing up: \n${nc}"
 	echo "$date_now MySQL backup enabled, backing up" >> $log_file
 	# Using ionice for MySQL dump
-	ionice -c 3 mysqldump -u $mysql_user -p$mysql_pass --events --all-databases | gzip -9 > $backup_path/Backup/$path_date/MySQL_Full_Dump_$path_date.sql.gz | tee -a $log_file
+	ionice -c 3 mdump -u $mysql_user -p$mysql_pass --events --all-databases | gzip -9 > $backup_path/Backup/$path_date/MySQL_Full_Dump_$path_date.sql.gz | tee -a $log_file
 	if [ $? -eq 0 ]
 	then
 		echo -e "\n ${color}--- $date_now MySQL backup completed. \n${nc}"
