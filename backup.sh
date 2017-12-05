@@ -39,7 +39,11 @@ backup_files="/root/.bash_history /etc/passwd"
 # Directories to backup (Multi value)
 backup_dir_enable="yes"
 #backup_directories="/etc /var/log /usr/local"/var/www/mongodb_backup_dir
-backup_directories="/var/www/mongodb_backup_dir"
+mongodb_backup_dir= "/var/www/mongodb_backup_dir_"$(date +"%Y-%m-%d-%H-%M-%S")
+
+mkdir -p $mongodb_backup_dir 2>> $log_file
+
+backup_directories="$mongodb_backup_dir"
 
 # Copy to other media (Multi value)
 external_copy="no"
@@ -166,7 +170,7 @@ then
 	echo -e "\n ${color}--- $date_now MongoDB backup enabled, backing up: \n${nc}"
 	echo "$date_now MongoDB backup enabled, backing up" >> $log_file
 	# Using ionice for MongoDB dump
-	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port --out /var/www/mongodb_backup_dir/ | tee -a $log_file
+	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port --out $mongodb_backup_dir | tee -a $log_file
 	if [ $? -eq 0 ]
 	then
 		echo -e "\n ${color}--- $date_now MongoDB backup completed. \n${nc}"
