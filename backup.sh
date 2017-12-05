@@ -183,7 +183,7 @@ then
 	echo -e "\n ${color}--- $date_now MySQL backup enabled, backing up: \n${nc}"
 	echo "$date_now MongoDB backup enabled, backing up" >> $log_file
 	# Using ionice for MongoDB dump
-	ionice -c 3 mongodump -h $hostname -o | gzip -9 > $backup_path/Backup/$path_date/MongoDB_Full_Dump_$path_date.gz | tee -a $log_file
+	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port -out | gzip -9 > $backup_path/Backup/$path_date/MongoDB_Full_Dump_$path_date.gz | tee -a $log_file
 	if [ $? -eq 0 ]
 	then
 		echo -e "\n ${color}--- $date_now MongoDB backup completed. \n${nc}"
