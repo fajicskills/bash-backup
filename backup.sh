@@ -166,7 +166,7 @@ then
 	echo -e "\n ${color}--- $date_now MySQL backup enabled, backing up: \n${nc}"
 	echo "$date_now MongoDB backup enabled, backing up" >> $log_file
 	# Using ionice for MongoDB dump
-	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port -out /var/www/mongodb_backup_dir/ | tee -a $log_file
+	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port --out /var/www/mongodb_backup_dir/ | tee -a $log_file
 	if [ $? -eq 0 ]
 	then
 		echo -e "\n ${color}--- $date_now MongoDB backup completed. \n${nc}"
