@@ -33,11 +33,11 @@ backup_path="/tmp"
 log_file="/var/log/backup.log"
 
 # Files to backup (Multi value)
-backup_files_enable="yes"
+backup_files_enable="no"
 backup_files="/root/.bash_history /etc/passwd"
 
 # Directories to backup (Multi value)
-backup_dir_enable="yes"
+backup_dir_enable="no"
 backup_directories="/etc /var/log /usr/local"
 
 # Copy to other media (Multi value)
