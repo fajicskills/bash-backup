@@ -40,7 +40,7 @@ backup_files="/root/.bash_history /etc/passwd"
 backup_dir_enable="yes"
 #backup_directories="/etc /var/log /usr/local"/var/www/mongodb_backup_dir
 mongodb_backup_date=$(hostname -s)_$(date +"%Y-%m-%d-%H-%M-%S")
-mongodb_backup_dir= "/var/www/mongodb_backup_dir_$mongodb_backup_date"
+mongodb_backup_dir="/var/www/mongodb_backup_dir_$mongodb_backup_date"
 
 mkdir -p $mongodb_backup_dir 2>> $log_file
 
