@@ -41,7 +41,7 @@ backup_dir_enable="yes"
 #backup_directories="/etc /var/log /usr/local"/var/www/mongodb_backup_dir
 mongodb_backup_dir= "/var/www/mongodb_backup_dir_$(date +"%Y_%m_%d_%H_%M_%S")"
 
-mkdir "$mongodb_backup_dir"
+mkdir -p $mongodb_backup_dir 2>> $log_file
 
 backup_directories="$mongodb_backup_dir"
 
