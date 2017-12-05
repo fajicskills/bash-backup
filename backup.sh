@@ -37,8 +37,9 @@ backup_files_enable="no"
 backup_files="/root/.bash_history /etc/passwd"
 
 # Directories to backup (Multi value)
-backup_dir_enable="no"
-backup_directories="/etc /var/log /usr/local"
+backup_dir_enable="yes"
+#backup_directories="/etc /var/log /usr/local"/var/www/mongodb_backup_dir
+backup_directories="/var/www/mongodb_backup_dir"
 
 # Copy to other media (Multi value)
 external_copy="no"
@@ -157,25 +158,7 @@ fi
 
 sleep 1
 
-# Backing up the directories
-if [ $backup_dir_enable = "yes" ]
-then
-	echo -e "\n ${color}--- $date_now Backing up directories \n${nc}"
-	echo "$date_now Backing up directories" >> $log_file
-	for backup_dirs in $backup_directories
-	do
-      echo "--> $backup_dirs" | tee -a $log_file
-		  dir_name=`echo $backup_dirs | cut -d / -f2- | sed 's/\//-/g'`
-      if [[ -d ${backup_dirs}/.git ]]; then
-          tar -cjf $backup_path/Backup/$path_date/$dir_name.tar.bz2 -X ${backup_dirs}/.gitignore $backup_dirs/ > /dev/null 2> /dev/null
-      else
-          tar -cjf $backup_path/Backup/$path_date/$dir_name.tar.bz2 $backup_dirs/ > /dev/null 2> /dev/null
-      fi
-	done
-	echo
-fi
 
-sleep 1
 
 # MongoDB backup
 if [ $mongodb_backup = "yes" ]
@@ -183,7 +166,7 @@ then
 	echo -e "\n ${color}--- $date_now MySQL backup enabled, backing up: \n${nc}"
 	echo "$date_now MongoDB backup enabled, backing up" >> $log_file
 	# Using ionice for MongoDB dump
-	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port -out | gzip -9 > $backup_path/Backup/$path_date/MongoDB_Full_Dump_$path_date.gz | tee -a $log_file
+	ionice -c 3 mongodump --host $mongodb_host --port $mongodb_port -out /var/www/mongodb_backup_dir | tee -a $log_file
 	if [ $? -eq 0 ]
 	then
 		echo -e "\n ${color}--- $date_now MongoDB backup completed. \n${nc}"
@@ -236,6 +219,27 @@ then
 		echo -e "\n ${color}--- $date_now PostgreSQL backup completed. \n${nc}"
 		echo "$date_now PostgreSQL backup completed" >> $log_file
 	fi
+fi
+
+sleep 1
+
+
+# Backing up the directories
+if [ $backup_dir_enable = "yes" ]
+then
+	echo -e "\n ${color}--- $date_now Backing up directories \n${nc}"
+	echo "$date_now Backing up directories" >> $log_file
+	for backup_dirs in $backup_directories
+	do
+      echo "--> $backup_dirs" | tee -a $log_file
+		  dir_name=`echo $backup_dirs | cut -d / -f2- | sed 's/\//-/g'`
+      if [[ -d ${backup_dirs}/.git ]]; then
+          tar -cjf $backup_path/Backup/$path_date/$dir_name.tar.bz2 -X ${backup_dirs}/.gitignore $backup_dirs/ > /dev/null 2> /dev/null
+      else
+          tar -cjf $backup_path/Backup/$path_date/$dir_name.tar.bz2 $backup_dirs/ > /dev/null 2> /dev/null
+      fi
+	done
+	echo
 fi
 
 sleep 1
@@ -323,6 +327,8 @@ then
 		echo "$date_now Uploading to MEGA.nz failed. Install 'megatools' from http://megatools.megous.com" >> $log_file
 	fi
 fi
+
+sleep 1
 
 # Send a simple email notification
 if [ $send_email = "yes" ]
