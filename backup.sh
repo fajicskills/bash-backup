@@ -338,7 +338,7 @@ sleep 1
 # Send a simple email notification
 if [ $send_email = "yes" ]
 then
-	echo -e "Backup completed $date_now\nBackup path: $backup_path/Full_Backup_$path_date.tar.bz2" | mail -s "Backup Result" $email_to  -a "$backup_path/Full_Backup_$path_date.tar.bz2" >> $log_file 2>&1
+	echo -e "Backup completed $date_now\nBackup path: $backup_path/Full_Backup_$path_date.tar.bz2" | mail -s "Backup Result" -a "$backup_path/Full_Backup_$path_date.tar.bz2" $email_to >> $log_file 2>&1
 fi
 
 echo -e "\n"
